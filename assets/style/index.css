@@ -21,7 +21,20 @@ body {
 }
 
 .everything {
-    display: none;
+    text-align: center;
+}
+
+.reset {
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: #fff;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.reset:hover {
+    cursor: pointer;
+    background-color: #e95c4d;
 }
 
 .game-container {

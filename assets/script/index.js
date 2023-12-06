@@ -33,15 +33,13 @@ const userInput = select('.user-input');
 const scoreDisplay = select('.score');
 const timerDisplay = select('.timer');
 const startBtn = select('.startBtn');
+const resetBtn = select('.reset');
 const countDown = select('.countDown');
 const startPage = select('.startPage');
 const everything = select('.everything');
 const countdownSound = selectById('countdownSound');
 const correctAnswer = selectById('correctAnswer');
 const tickingClock = selectById('tickingClock');
-
-let score = 0;
-let timer = 99;
 
 function startCounDown() {
     countDown.innerText = '3';
@@ -61,6 +59,9 @@ function startCounDown() {
 }
 
 function startGame() {
+    let score = 0;
+    let timer = 99;
+
     function updateWord() {
         if (shuffledWords.length > 0) {
             const currentWord = shuffledWords.pop();
@@ -115,6 +116,10 @@ function startGame() {
 
     const gameInterval = setInterval(updateTimer, 1000);
 }
+
+onEvent('load', window, () => {
+    everything.style.display = 'none';
+});
 
 onEvent('click', startBtn, () => {
     startBtn.style.display = 'none';
