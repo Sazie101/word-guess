@@ -40,99 +40,11 @@ const everything = select('.everything');
 const countdownSound = selectById('countdownSound');
 const correctAnswer = selectById('correctAnswer');
 const tickingClock = selectById('tickingClock');
-
-// function startCounDown() {
-//     countDown.innerText = '3';
-//     setTimeout(() => {
-//         countDown.innerText = '2';
-//         setTimeout(() => {
-//             countDown.innerText = '1';
-//             setTimeout(() => {
-//                 countDown.innerText = '';
-//                 everything.style.display = 'block';
-//                 userInput.focus();
-//                 startPage.style.display = 'none';
-//                 startGame();
-//             }, 1000);
-//         }, 1000);
-//     }, 1000);
-// }
-
-// function startGame() {
-//     let score = 0;
-//     let timer = 15;
-
-//     function updateWord() {
-//         if (shuffledWords.length > 0) {
-//             const currentWord = shuffledWords.pop();
-//             wordDisplay.innerText = currentWord;
-//             userInput.value = ''; 
-//         } else {
-//             endGame();
-//         }
-//     }
-    
-//     function updateScore() {
-//         score++;
-//         scoreDisplay.innerText = `Score: ${score}`;
-//     }
-    
-//     function updateTimer() {
-//         timer--;
-//         timerDisplay.innerText = `Time remaining: ${timer}s`;
-
-//         if (timer <= 60) {
-//             timerDisplay.style.color = '#ffff00';
-//         } 
-        
-//         if (timer <= 10) {
-//             timerDisplay.style.color = '#ff0000';
-//             timerDisplay.classList.add('flash');
-//             tickingClock.play();
-//         }
-    
-//         if (timer === 0) {
-//             tickingClock.pause();
-//             timerDisplay.classList.remove('flash');
-//             endGame();
-//         }
-//     }
-
-//     updateWord();
-
-//     function endGame() {
-//         wordDisplay.innerText = 'Game Over!';
-//         userInput.disabled = true;
-//         clearInterval(gameInterval);
-//     }
-    
-//     onEvent('input', userInput, () => {
-//         if (userInput.value.trim() === wordDisplay.innerText) {
-//             correctAnswer.play();
-//             updateScore();
-//             updateWord();
-//         }
-//     });
-
-//     const gameInterval = setInterval(updateTimer, 1000);
-// }
-
-// onEvent('load', window, () => {
-//     everything.style.display = 'none';
-// });
-
-// onEvent('click', startBtn, () => {
-//     startBtn.style.display = 'none';
-//     countdownSound.play();
-//     startCounDown();
-// });
-
 let gameInterval; 
-let score;
-let timer;
+let score = 0;
+let timer = 15;
 
-function startCountDown(score, timer) {
-    countdownSound.play();
+function startCountDown() {
     countDown.innerText = '3';
     setTimeout(() => {
         countDown.innerText = '2';
@@ -143,7 +55,7 @@ function startCountDown(score, timer) {
                 everything.style.display = 'block';
                 userInput.focus();
                 startPage.style.display = 'none';
-                countdownSound.pause();
+
                 function updateWord() {
                     if (shuffledWords.length > 0) {
                         const currentWord = shuffledWords.pop();
@@ -196,26 +108,32 @@ function startCountDown(score, timer) {
                     }
                 });
 
-                gameInterval = setInterval(updateTimer, 1000); 
+                gameInterval = setInterval(updateTimer, 1000); // Assign the interval to the gameInterval variable
             }, 1000);
         }, 1000);
     }, 1000);
 }
 
 function resetGame() {
-    // Reset shuffled words array
-    shuffledWords = shuffleArray(words.slice());
-    // Reset score and time
-    let score = 0;
-    let timer = 15;
+    // Reset variables and display
+    shuffledWords = shuffleArray(words.slice()); // Use a copy of the original array
+    wordDisplay.innerText = '';
+    userInput.value = '';
+    score = 0;
+    timer = 15;
     scoreDisplay.innerText = 'Score: 0';
     timerDisplay.innerText = 'Time remaining: 15s';
-    userInput.disabled = false;
-    clearInterval(gameInterval);
     everything.style.display = 'none';
     startPage.style.display = 'block';
-    onEvent('ended', countdownSound, startCountDown);
-    startCountDown(score, timer);
+    timerDisplay.style.color = '#ffff00';
+    timerDisplay.classList.remove('flash');
+    tickingClock.pause();
+    timerDisplay.style.color = '';
+    userInput.disabled = false;
+    clearInterval(gameInterval);
+    countdownSound.play();
+    tickingClock.pause();
+    startCountDown();
 }
 
 
@@ -227,7 +145,8 @@ onEvent('click', startBtn, () => {
     score = 0;
     timer = 15;
     startBtn.style.display = 'none';
-    startCountDown(score, timer);
+    countdownSound.play();
+    startCountDown();
 });
 
 onEvent('click', resetBtn, () => {
