@@ -40,89 +40,159 @@ const everything = select('.everything');
 const countdownSound = selectById('countdownSound');
 const correctAnswer = selectById('correctAnswer');
 const tickingClock = selectById('tickingClock');
+const gameSound = selectById('gameSound');
+const typing = selectById('typing');
+const scoreTable = select('.scoreTable');
 let gameInterval; 
 let score = 0;
-let timer = 15;
+let timer = 20;
+
+let scoresArray = JSON.parse(localStorage.getItem('scores')) || [];
+
+function highScore() {
+    const scoreboard = select('.scoreboard');
+    scoreboard.innerHTML = '';
+
+    if (scoresArray.length > 0) {
+        scoresArray.forEach((score, index) => {
+            const listItem = document.createElement('li');
+            listItem.innerText = `#${index + 1}: ${score.hits} words ${score.percentage}%`;
+            scoreboard.appendChild(listItem);
+        });
+    } else {
+        const message = document.createElement('p');
+        message.innerText = 'No games have been played.';
+        scoreboard.appendChild(message);
+    }
+}
 
 function startCountDown() {
-    countDown.innerText = '3';
-    setTimeout(() => {
-        countDown.innerText = '2';
-        setTimeout(() => {
-            countDown.innerText = '1';
-            setTimeout(() => {
-                countDown.innerText = '';
-                everything.style.display = 'block';
-                userInput.focus();
-                startPage.style.display = 'none';
+    let countdownValue = 3;
 
-                function updateWord() {
-                    if (shuffledWords.length > 0) {
-                        const currentWord = shuffledWords.pop();
-                        wordDisplay.innerText = currentWord;
-                        userInput.value = ''; 
+    const countdownInterval = setInterval(() => {
+        countdownSound.play();
+        if (countdownValue > 0) {
+            countDown.innerText = countdownValue;
+            countdownValue--;
+        } else {
+            gameSound.play();
+            gameSound.volume = 0.8;
+            countDown.innerText = '';
+            clearInterval(countdownInterval);
+            everything.style.display = 'block';
+            userInput.focus();
+            startPage.style.display = 'none';
+
+            function updateWord() {
+                if (shuffledWords.length > 0) {
+                    const currentWord = shuffledWords.pop();
+                    wordDisplay.innerText = currentWord;
+                    userInput.value = ''; 
+                    highlightLetters();
+                } else {
+                    endGame();
+                }
+            }
+
+            function updateScore() {
+                score++;
+                scoreDisplay.innerText = `Hits: ${score}`;
+                scoreDisplay.classList.add('score-animation');
+                setTimeout(() => {
+                    scoreDisplay.classList.remove('score-animation');
+                }, 500);
+            }
+
+            function updateTimer() {
+                timer--;
+                timerDisplay.innerText = `Time: ${timer}s`;
+
+                if (timer <= 10) {
+                    gameSound.volume = 0.6;
+                    timerDisplay.style.color = '#ff0000';
+                    timerDisplay.classList.add('flash');
+                    tickingClock.play();
+                }
+
+                if (timer === 0) {
+                    tickingClock.pause();
+                    timerDisplay.classList.remove('flash');
+                    endGame();
+                }
+            }
+
+            updateWord();
+
+            function endGame() {
+                gameSound.pause();
+                wordDisplay.innerText = 'Game Over!';
+                userInput.disabled = true;
+                scoreTable.style.display = 'block';
+
+                const gameData = {
+                    hits: 0,
+                    percentage: 0,
+                };
+
+                gameData.hits = score;
+                gameData.percentage = ((score / words.length) * 100).toFixed(2);
+                scoresArray.push(gameData);
+
+                scoresArray.sort((a, b) => b.hits - a.hits);
+                scoresArray.splice(10);
+
+                localStorage.setItem('scores', JSON.stringify(scoresArray));
+
+                highScore();
+                
+                clearInterval(gameInterval);
+            }
+            
+            function highlightLetters() {
+                const word = wordDisplay.innerText;
+                const letters = word.split('');
+                const inputLetters = userInput.value.split('');
+                const input = userInput.value.toLowerCase();
+                let highlightedWord = '';
+            
+                letters.forEach((letter, index) => {
+                    if (letter === inputLetters[index]) {
+                        highlightedWord += `<span class="highlight">${letter}</span>`;
                     } else {
-                        endGame();
-                    }
-                }
-
-                function updateScore() {
-                    score++;
-                    scoreDisplay.innerText = `Score: ${score}`;
-                }
-
-                function updateTimer() {
-                    timer--;
-                    timerDisplay.innerText = `Time remaining: ${timer}s`;
-
-                    if (timer <= 60) {
-                        timerDisplay.style.color = '#ffff00';
-                    } 
-
-                    if (timer <= 10) {
-                        timerDisplay.style.color = '#ff0000';
-                        timerDisplay.classList.add('flash');
-                        tickingClock.play();
-                    }
-
-                    if (timer === 0) {
-                        tickingClock.pause();
-                        timerDisplay.classList.remove('flash');
-                        endGame();
-                    }
-                }
-
-                updateWord();
-
-                function endGame() {
-                    wordDisplay.innerText = 'Game Over!';
-                    userInput.disabled = true;
-                    clearInterval(gameInterval);
-                }
-
-                onEvent('input', userInput, () => {
-                    if (userInput.value.trim() === wordDisplay.innerText) {
-                        correctAnswer.play();
-                        updateScore();
-                        updateWord();
+                        highlightedWord += letter;
                     }
                 });
+            
+                wordDisplay.innerHTML = highlightedWord;
+            }
 
-                gameInterval = setInterval(updateTimer, 1000); // Assign the interval to the gameInterval variable
-            }, 1000);
-        }, 1000);
+            onEvent('input', userInput, () => {
+                typing.play();
+                if (userInput.value.trim() === wordDisplay.innerText) {
+                    correctAnswer.play();
+                    updateScore();
+                    updateWord();
+                } else {
+                    highlightLetters();
+                }
+            });
+
+            gameInterval = setInterval(updateTimer, 1000); 
+        }
     }, 1000);
 }
 
 function resetGame() {
-    // Reset variables and display
-    shuffledWords = shuffleArray(words.slice()); // Use a copy of the original array
+    gameSound.pause();
+    gameSound.volume = 0.8;
+    scoreTable.style.display = 'none';
+    shuffledWords = shuffleArray(words.slice()); 
     wordDisplay.innerText = '';
     userInput.value = '';
     score = 0;
-    timer = 15;
+    timer = 20;
     scoreDisplay.innerText = 'Score: 0';
-    timerDisplay.innerText = 'Time remaining: 15s';
+    timerDisplay.innerText = 'Time : 20s';
     everything.style.display = 'none';
     startPage.style.display = 'block';
     timerDisplay.style.color = '#ffff00';
@@ -131,11 +201,9 @@ function resetGame() {
     timerDisplay.style.color = '';
     userInput.disabled = false;
     clearInterval(gameInterval);
-    countdownSound.play();
     tickingClock.pause();
     startCountDown();
 }
-
 
 onEvent('load', window, () => {
     everything.style.display = 'none';
@@ -143,9 +211,8 @@ onEvent('load', window, () => {
 
 onEvent('click', startBtn, () => {
     score = 0;
-    timer = 15;
+    timer = 20;
     startBtn.style.display = 'none';
-    countdownSound.play();
     startCountDown();
 });
 

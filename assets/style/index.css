@@ -17,11 +17,28 @@ body {
     width: 100%;
     display: grid;
     place-items: center;
-    background: linear-gradient(to bottom right, #3498ff, #1aff9c); 
+    background: url(../img/joshua-kettle-mHm1ASYNC0I-unsplash.jpg) center;
+    background-size: 100% 150%;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust the opacity (last value) to control darkness */
+    z-index: -1; /* Ensure the overlay is behind the background image */
 }
 
 .everything {
     text-align: center;
+    margin-bottom: 150px;
+}
+
+.highlight {
+    color: #00ff00;
 }
 
 .reset {
@@ -39,21 +56,69 @@ body {
 
 .game-container {
     text-align: center;
-    margin-top: 50px;
-    background-color: rgba(255, 255, 255, 0.8); 
+    margin-bottom: 60px;
     padding: 20px;
     border-radius: 10px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+    background: transparent;
+    justify-content: center;
 }
 
 h1 {
-    color: #2c3e50; 
+    color: #000; 
+    font-size: 80px;
+    font-weight: 700;
 }
 
 .word-display {
     font-size: 24px;
     margin: 20px;
-    color: #e74c3c; 
+    color: #ff0000; 
+}
+
+.scoreboard li {
+    justify-content: center;
+    text-decoration: none;
+    list-style: none;
+    color: #01b3a6;
+    margin-bottom: 10px;
+}
+
+@keyframes scoreAnimation {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.score-animation {
+    animation: scoreAnimation 0.5s ease-in-out;
+    color: #27ae60; 
+}
+
+.scoreboard p {
+    font-size: 20px;
+    color: #fff;
+}
+
+.scoreTable h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.startPage {
+    margin-bottom: 80px;
+}
+
+.scoreTable {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    background:transparent;
+    display: none;
 }
 
 .user-input {
@@ -81,6 +146,7 @@ h1 {
     font-size: 26px;
     text-align: center;
     color:#00ff00;
+    margin-bottom: 70px;
 }
 
 .startBtn {
@@ -142,7 +208,7 @@ animation: flash 1s infinite;
 }
 
 .countDown {
-    font-size: 300px; 
+    font-size: 150px; 
     font-weight: bold;
     animation: changeColor 2s infinite;
     color: #fff;
