@@ -41,7 +41,6 @@ const countdownSound = selectById('countdownSound');
 const correctAnswer = selectById('correctAnswer');
 const tickingClock = selectById('tickingClock');
 const gameSound = selectById('gameSound');
-const typing = selectById('typing');
 const scoreTable = select('.scoreTable');
 let gameInterval; 
 let score = 0;
@@ -167,7 +166,6 @@ function startCountDown() {
             }
 
             onEvent('input', userInput, () => {
-                typing.play();
                 if (userInput.value.trim() === wordDisplay.innerText) {
                     correctAnswer.play();
                     updateScore();
