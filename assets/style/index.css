@@ -81,6 +81,8 @@ h1 {
     list-style: none;
     color: #01b3a6;
     margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 @keyframes scoreAnimation {
@@ -153,8 +155,25 @@ h1 {
     padding: 20px;
     border-radius: 5px;
     font-size: 36px;
+    font-weight: 600;
     position: relative;
     overflow: hidden;
+}
+
+@keyframes colorChange {
+    0% {
+        color: #ff0000; 
+    }
+    50% {
+        color: #00ff00; 
+    }
+    100% {
+        color: #0000ff; 
+    }
+}
+
+.your-text-class {
+    animation: colorChange 3s infinite;
 }
 
 .startBtn:hover {
@@ -204,7 +223,7 @@ span {
 }
 
 .flash {
-animation: flash 1s infinite;
+    animation: flash 1s infinite;
 }
 
 .countDown {
