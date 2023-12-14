@@ -42,9 +42,12 @@ const correctAnswer = selectById('correctAnswer');
 const tickingClock = selectById('tickingClock');
 const gameSound = selectById('gameSound');
 const scoreTable = select('.scoreTable');
+const title = select('.your-text-class');
+const mouseClick = selectById('mouseClick');
 let gameInterval; 
 let score = 0;
 let timer = 20;
+let text;
 
 let scoresArray = JSON.parse(localStorage.getItem('scores')) || [];
 
@@ -81,6 +84,16 @@ function startCountDown() {
             everything.style.display = 'block';
             userInput.focus();
             startPage.style.display = 'none';
+
+            text = 'Word Timer';
+            text = text.split('');
+
+            text.forEach((char, index) => {
+                const span = document.createElement('span');
+                span.innerText = char;
+                span.style.animationDelay = `0.${index + 1}s`;
+                title.appendChild(span);
+            });
 
             function updateWord() {
                 if (shuffledWords.length > 0) {
@@ -189,6 +202,7 @@ function resetGame() {
     userInput.value = '';
     score = 0;
     timer = 20;
+    title.innerHTML = ''; 
     scoreDisplay.innerText = 'Score: 0';
     timerDisplay.innerText = 'Time : 20s';
     everything.style.display = 'none';
@@ -208,6 +222,7 @@ onEvent('load', window, () => {
 });
 
 onEvent('click', startBtn, () => {
+    mouseClick.play();
     score = 0;
     timer = 20;
     startBtn.style.display = 'none';
